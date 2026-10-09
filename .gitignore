@@ -1,0 +1,8 @@
+# Сборка Go и артефакты
+bin/
+*.exe
+*.exe~
+
+# Мусор ОС и IDE
+.DS_Store
+Thumbs.db
