@@ -1,8 +1,11 @@
-# Сборка Go и артефакты
+﻿# РЎР±РѕСЂРєР° Go Рё Р°СЂС‚РµС„Р°РєС‚С‹
 bin/
 *.exe
 *.exe~
 
-# Мусор ОС и IDE
+# РњСѓСЃРѕСЂ РћРЎ Рё IDE
 .DS_Store
 Thumbs.db
+build/bin
+node_modules
+frontend/dist
