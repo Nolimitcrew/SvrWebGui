@@ -1,4 +1,4 @@
-package main
+﻿package main
 
 import (
 	"context"
@@ -12,100 +12,100 @@ import (
 	"SvrWebGui/internal/update"
 )
 
-// App — основная структура приложения Wails.
+// App вЂ” РѕСЃРЅРѕРІРЅР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° РїСЂРёР»РѕР¶РµРЅРёСЏ Wails.
 type App struct {
 	ctx       context.Context
 	transport *modbus.MockTransport
 	driver    *ttr01.Driver
-	version   string // текущая версия приложения (тег релиза)
+	version   string // С‚РµРєСѓС‰Р°СЏ РІРµСЂСЃРёСЏ РїСЂРёР»РѕР¶РµРЅРёСЏ (С‚РµРі СЂРµР»РёР·Р°)
 }
 
-// ReleaseCheck — результат проверки наличия обновления.
+// ReleaseCheck вЂ” СЂРµР·СѓР»СЊС‚Р°С‚ РїСЂРѕРІРµСЂРєРё РЅР°Р»РёС‡РёСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ.
 type ReleaseCheck struct {
-	// Newer — true, если в релизе версия новее текущей.
+	// Newer вЂ” true, РµСЃР»Рё РІ СЂРµР»РёР·Рµ РІРµСЂСЃРёСЏ РЅРѕРІРµРµ С‚РµРєСѓС‰РµР№.
 	Newer bool `json:"newer"`
-	// TagName — тег релиза (например "v0.1.0").
+	// TagName вЂ” С‚РµРі СЂРµР»РёР·Р° (РЅР°РїСЂРёРјРµСЂ "v0.1.0").
 	TagName string `json:"tagName"`
-	// Name — название релиза.
+	// Name вЂ” РЅР°Р·РІР°РЅРёРµ СЂРµР»РёР·Р°.
 	Name string `json:"name"`
-	// Body — описание изменений (release notes).
+	// Body вЂ” РѕРїРёСЃР°РЅРёРµ РёР·РјРµРЅРµРЅРёР№ (release notes).
 	Body string `json:"body"`
-	// HTMLURL — ссылка на страницу релиза.
+	// HTMLURL вЂ” СЃСЃС‹Р»РєР° РЅР° СЃС‚СЂР°РЅРёС†Сѓ СЂРµР»РёР·Р°.
 	HTMLURL string `json:"htmlUrl"`
-	// AssetName — имя подходящего артефакта для Windows amd64.
+	// AssetName вЂ” РёРјСЏ РїРѕРґС…РѕРґСЏС‰РµРіРѕ Р°СЂС‚РµС„Р°РєС‚Р° РґР»СЏ Windows amd64.
 	AssetName string `json:"assetName"`
-	// AssetSize — размер артефакта в байтах.
+	// AssetSize вЂ” СЂР°Р·РјРµСЂ Р°СЂС‚РµС„Р°РєС‚Р° РІ Р±Р°Р№С‚Р°С….
 	AssetSize int64 `json:"assetSize"`
-	// AssetURL — прямая ссылка на скачивание артефакта.
+	// AssetURL вЂ” РїСЂСЏРјР°СЏ СЃСЃС‹Р»РєР° РЅР° СЃРєР°С‡РёРІР°РЅРёРµ Р°СЂС‚РµС„Р°РєС‚Р°.
 	AssetURL string `json:"assetUrl"`
-	// HasAsset — есть ли подходящий артефакт в релизе.
+	// HasAsset вЂ” РµСЃС‚СЊ Р»Рё РїРѕРґС…РѕРґСЏС‰РёР№ Р°СЂС‚РµС„Р°РєС‚ РІ СЂРµР»РёР·Рµ.
 	HasAsset bool `json:"hasAsset"`
-	// Error — текст ошибки, если проверка не удалась.
+	// Error вЂ” С‚РµРєСЃС‚ РѕС€РёР±РєРё, РµСЃР»Рё РїСЂРѕРІРµСЂРєР° РЅРµ СѓРґР°Р»Р°СЃСЊ.
 	Error string `json:"error"`
 }
 
-// DownloadResult — результат скачивания обновления.
+// DownloadResult вЂ” СЂРµР·СѓР»СЊС‚Р°С‚ СЃРєР°С‡РёРІР°РЅРёСЏ РѕР±РЅРѕРІР»РµРЅРёСЏ.
 type DownloadResult struct {
-	// Success — true, если файл успешно скачан.
+	// Success вЂ” true, РµСЃР»Рё С„Р°Р№Р» СѓСЃРїРµС€РЅРѕ СЃРєР°С‡Р°РЅ.
 	Success bool `json:"success"`
-	// Path — полный путь к сохранённому файлу.
+	// Path вЂ” РїРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє СЃРѕС…СЂР°РЅС‘РЅРЅРѕРјСѓ С„Р°Р№Р»Сѓ.
 	Path string `json:"path"`
-	// Size — размер скачанного файла в байтах.
+	// Size вЂ” СЂР°Р·РјРµСЂ СЃРєР°С‡Р°РЅРЅРѕРіРѕ С„Р°Р№Р»Р° РІ Р±Р°Р№С‚Р°С….
 	Size int64 `json:"size"`
-	// Error — текст ошибки, если скачивание не удалось.
+	// Error вЂ” С‚РµРєСЃС‚ РѕС€РёР±РєРё, РµСЃР»Рё СЃРєР°С‡РёРІР°РЅРёРµ РЅРµ СѓРґР°Р»РѕСЃСЊ.
 	Error string `json:"error"`
 }
 
-// NewApp создаёт новое приложение Wails.
+// NewApp СЃРѕР·РґР°С‘С‚ РЅРѕРІРѕРµ РїСЂРёР»РѕР¶РµРЅРёРµ Wails.
 func NewApp() *App {
 	return &App{
-		version: "v0.1.0", // текущая версия; при публикации релиза меняем на соответствующий тег
+		version: "v0.1.1", // С‚РµРєСѓС‰Р°СЏ РІРµСЂСЃРёСЏ; РїСЂРё РїСѓР±Р»РёРєР°С†РёРё СЂРµР»РёР·Р° РјРµРЅСЏРµРј РЅР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ С‚РµРі
 	}
 }
 
-// startup вызывается при старте приложения. Сохраняем контекст
-// и инициализируем транспорт с драйвером TTR-01 (используется MockTransport).
+// startup РІС‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё СЃС‚Р°СЂС‚Рµ РїСЂРёР»РѕР¶РµРЅРёСЏ. РЎРѕС…СЂР°РЅСЏРµРј РєРѕРЅС‚РµРєСЃС‚
+// Рё РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј С‚СЂР°РЅСЃРїРѕСЂС‚ СЃ РґСЂР°Р№РІРµСЂРѕРј TTR-01 (РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ MockTransport).
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 
-	// Создаём эмулятор Modbus (MockTransport). Позже можно заменить
-	// на RTUTransport/TCPTransport без изменения UI.
+	// РЎРѕР·РґР°С‘Рј СЌРјСѓР»СЏС‚РѕСЂ Modbus (MockTransport). РџРѕР·Р¶Рµ РјРѕР¶РЅРѕ Р·Р°РјРµРЅРёС‚СЊ
+	// РЅР° RTUTransport/TCPTransport Р±РµР· РёР·РјРµРЅРµРЅРёСЏ UI.
 	a.transport = modbus.NewMockTransport()
 	a.driver = ttr01.NewDriver(a.transport, 1)
 }
 
-// GetCurrentData читает текущие данные контроллера TTR-01.
+// GetCurrentData С‡РёС‚Р°РµС‚ С‚РµРєСѓС‰РёРµ РґР°РЅРЅС‹Рµ РєРѕРЅС‚СЂРѕР»Р»РµСЂР° TTR-01.
 //
-// Данные заполняются тестовыми значениями (эмулятор), чтобы интерфейс
-// сразу что-то показывал. При подключении реального прибора достаточно
-// заменить транспорт в startup().
+// Р”Р°РЅРЅС‹Рµ Р·Р°РїРѕР»РЅСЏСЋС‚СЃСЏ С‚РµСЃС‚РѕРІС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё (СЌРјСѓР»СЏС‚РѕСЂ), С‡С‚РѕР±С‹ РёРЅС‚РµСЂС„РµР№СЃ
+// СЃСЂР°Р·Сѓ С‡С‚Рѕ-С‚Рѕ РїРѕРєР°Р·С‹РІР°Р». РџСЂРё РїРѕРґРєР»СЋС‡РµРЅРёРё СЂРµР°Р»СЊРЅРѕРіРѕ РїСЂРёР±РѕСЂР° РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ
+// Р·Р°РјРµРЅРёС‚СЊ С‚СЂР°РЅСЃРїРѕСЂС‚ РІ startup().
 func (a *App) GetCurrentData() (*ttr01.CurrentData, error) {
 	if a.driver == nil || a.transport == nil {
-		return nil, fmt.Errorf("драйвер TTR-01 не инициализирован")
+		return nil, fmt.Errorf("РґСЂР°Р№РІРµСЂ TTR-01 РЅРµ РёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°РЅ")
 	}
 
-	// Наполняем эмулятор свежими тестовыми показаниями (включая текущее время).
+	// РќР°РїРѕР»РЅСЏРµРј СЌРјСѓР»СЏС‚РѕСЂ СЃРІРµР¶РёРјРё С‚РµСЃС‚РѕРІС‹РјРё РїРѕРєР°Р·Р°РЅРёСЏРјРё (РІРєР»СЋС‡Р°СЏ С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ).
 	a.fillMockRegisters()
 
-	// Чтение с небольшим таймаутом, чтобы UI не зависал.
+	// Р§С‚РµРЅРёРµ СЃ РЅРµР±РѕР»СЊС€РёРј С‚Р°Р№РјР°СѓС‚РѕРј, С‡С‚РѕР±С‹ UI РЅРµ Р·Р°РІРёСЃР°Р».
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 
 	data, err := a.driver.ReadCurrentData(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("не удалось прочитать данные TTR-01: %w", err)
+		return nil, fmt.Errorf("РЅРµ СѓРґР°Р»РѕСЃСЊ РїСЂРѕС‡РёС‚Р°С‚СЊ РґР°РЅРЅС‹Рµ TTR-01: %w", err)
 	}
 	return data, nil
 }
 
-// CheckForUpdate проверяет наличие новой версии в GitHub Releases.
-// Репозиторий: Nolimitcrew/SvrWebGui.
+// CheckForUpdate РїСЂРѕРІРµСЂСЏРµС‚ РЅР°Р»РёС‡РёРµ РЅРѕРІРѕР№ РІРµСЂСЃРёРё РІ GitHub Releases.
+// Р РµРїРѕР·РёС‚РѕСЂРёР№: Nolimitcrew/SvrWebGui.
 func (a *App) CheckForUpdate() ReleaseCheck {
 	const owner = "Nolimitcrew"
 	const repo = "SvrWebGui"
 
 	checker := update.NewChecker(owner, repo)
-	// Используем короткий таймаут, чтобы не блокировать UI.
+	// РСЃРїРѕР»СЊР·СѓРµРј РєРѕСЂРѕС‚РєРёР№ С‚Р°Р№РјР°СѓС‚, С‡С‚РѕР±С‹ РЅРµ Р±Р»РѕРєРёСЂРѕРІР°С‚СЊ UI.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -125,11 +125,11 @@ func (a *App) CheckForUpdate() ReleaseCheck {
 		HTMLURL: rel.HTMLURL,
 	}
 
-	// Ищем подходящий артефакт для Windows amd64.
+	// РС‰РµРј РїРѕРґС…РѕРґСЏС‰РёР№ Р°СЂС‚РµС„Р°РєС‚ РґР»СЏ Windows amd64.
 	asset, err := update.PickAsset(rel)
 	if err != nil {
 		res.HasAsset = false
-		// Ошибку не показываем как критическую — можно открыть страницу релиза.
+		// РћС€РёР±РєСѓ РЅРµ РїРѕРєР°Р·С‹РІР°РµРј РєР°Рє РєСЂРёС‚РёС‡РµСЃРєСѓСЋ вЂ” РјРѕР¶РЅРѕ РѕС‚РєСЂС‹С‚СЊ СЃС‚СЂР°РЅРёС†Сѓ СЂРµР»РёР·Р°.
 		return res
 	}
 
@@ -140,35 +140,35 @@ func (a *App) CheckForUpdate() ReleaseCheck {
 	return res
 }
 
-// DownloadUpdate скачивает артефакт релиза по assetURL и сохраняет
-// его в папку «Загрузки» (Downloads) текущего пользователя.
-// Возвращает путь к сохранённому файлу.
+// DownloadUpdate СЃРєР°С‡РёРІР°РµС‚ Р°СЂС‚РµС„Р°РєС‚ СЂРµР»РёР·Р° РїРѕ assetURL Рё СЃРѕС…СЂР°РЅСЏРµС‚
+// РµРіРѕ РІ РїР°РїРєСѓ В«Р—Р°РіСЂСѓР·РєРёВ» (Downloads) С‚РµРєСѓС‰РµРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ.
+// Р’РѕР·РІСЂР°С‰Р°РµС‚ РїСѓС‚СЊ Рє СЃРѕС…СЂР°РЅС‘РЅРЅРѕРјСѓ С„Р°Р№Р»Сѓ.
 func (a *App) DownloadUpdate(assetURL, fileName string) DownloadResult {
 	if assetURL == "" {
-		return DownloadResult{Success: false, Error: "не указана ссылка на скачивание"}
+		return DownloadResult{Success: false, Error: "РЅРµ СѓРєР°Р·Р°РЅР° СЃСЃС‹Р»РєР° РЅР° СЃРєР°С‡РёРІР°РЅРёРµ"}
 	}
 	if fileName == "" {
-		// Попробуем вырезать имя из URL, если не передали.
+		// РџРѕРїСЂРѕР±СѓРµРј РІС‹СЂРµР·Р°С‚СЊ РёРјСЏ РёР· URL, РµСЃР»Рё РЅРµ РїРµСЂРµРґР°Р»Рё.
 		fileName = filepath.Base(assetURL)
 		if fileName == "." || fileName == "/" || fileName == "" {
 			fileName = "SvrWebGui_update.zip"
 		}
 	}
 
-	// Определяем папку Downloads.
+	// РћРїСЂРµРґРµР»СЏРµРј РїР°РїРєСѓ Downloads.
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return DownloadResult{Success: false, Error: fmt.Sprintf("не удалось определить домашнюю папку: %v", err)}
+		return DownloadResult{Success: false, Error: fmt.Sprintf("РЅРµ СѓРґР°Р»РѕСЃСЊ РѕРїСЂРµРґРµР»РёС‚СЊ РґРѕРјР°С€РЅСЋСЋ РїР°РїРєСѓ: %v", err)}
 	}
 	downloads := filepath.Join(home, "Downloads")
 	if err := os.MkdirAll(downloads, 0o755); err != nil {
-		return DownloadResult{Success: false, Error: fmt.Sprintf("не удалось создать папку Downloads: %v", err)}
+		return DownloadResult{Success: false, Error: fmt.Sprintf("РЅРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ РїР°РїРєСѓ Downloads: %v", err)}
 	}
 
 	destPath := filepath.Join(downloads, fileName)
 	f, err := os.Create(destPath)
 	if err != nil {
-		return DownloadResult{Success: false, Error: fmt.Sprintf("не удалось создать файл: %v", err)}
+		return DownloadResult{Success: false, Error: fmt.Sprintf("РЅРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р»: %v", err)}
 	}
 	defer f.Close()
 
@@ -177,7 +177,7 @@ func (a *App) DownloadUpdate(assetURL, fileName string) DownloadResult {
 
 	n, err := update.Download(ctx, assetURL, f)
 	if err != nil {
-		// Удаляем частично скачанный файл, чтобы не оставлять битый архив.
+		// РЈРґР°Р»СЏРµРј С‡Р°СЃС‚РёС‡РЅРѕ СЃРєР°С‡Р°РЅРЅС‹Р№ С„Р°Р№Р», С‡С‚РѕР±С‹ РЅРµ РѕСЃС‚Р°РІР»СЏС‚СЊ Р±РёС‚С‹Р№ Р°СЂС…РёРІ.
 		_ = os.Remove(destPath)
 		return DownloadResult{Success: false, Error: err.Error()}
 	}
@@ -185,7 +185,7 @@ func (a *App) DownloadUpdate(assetURL, fileName string) DownloadResult {
 	return DownloadResult{Success: true, Path: destPath, Size: n}
 }
 
-// fillMockRegisters заполняет эмулятор Modbus тестовыми значениями.
+// fillMockRegisters Р·Р°РїРѕР»РЅСЏРµС‚ СЌРјСѓР»СЏС‚РѕСЂ Modbus С‚РµСЃС‚РѕРІС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё.
 func (a *App) fillMockRegisters() {
 	const base = ttr01.RegCurrentDataStart
 
@@ -194,13 +194,13 @@ func (a *App) fillMockRegisters() {
 		a.transport.SetRegisters(base+off, hi, lo)
 	}
 
-	writeTemp(ttr01.OffTOutdoor, -5.5) // уличная
-	writeTemp(ttr01.OffTIndoor, 22.0)  // комнатная
-	writeTemp(ttr01.OffTSupply, 45.0)  // подача
-	writeTemp(ttr01.OffTReturn, 35.0)  // обратка
-	writeTemp(ttr01.OffTDHW, 55.0)     // ГВС
+	writeTemp(ttr01.OffTOutdoor, -5.5) // СѓР»РёС‡РЅР°СЏ
+	writeTemp(ttr01.OffTIndoor, 22.0)  // РєРѕРјРЅР°С‚РЅР°СЏ
+	writeTemp(ttr01.OffTSupply, 45.0)  // РїРѕРґР°С‡Р°
+	writeTemp(ttr01.OffTReturn, 35.0)  // РѕР±СЂР°С‚РєР°
+	writeTemp(ttr01.OffTDHW, 55.0)     // Р“Р’РЎ
 
-	// Флаги: отопление + насос включены.
+	// Р¤Р»Р°РіРё: РѕС‚РѕРїР»РµРЅРёРµ + РЅР°СЃРѕСЃ РІРєР»СЋС‡РµРЅС‹.
 	a.transport.SetRegister(base+ttr01.OffStatus, ttr01.StatusHeating|ttr01.StatusPump)
 
 	now := time.Now()
