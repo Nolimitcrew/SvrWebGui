@@ -59,7 +59,7 @@ type DownloadResult struct {
 // NewApp СЃРѕР·РґР°С‘С‚ РЅРѕРІРѕРµ РїСЂРёР»РѕР¶РµРЅРёРµ Wails.
 func NewApp() *App {
 	return &App{
-		version: "v0.1.5", // С‚РµРєСѓС‰Р°СЏ РІРµСЂСЃРёСЏ; РїСЂРё РїСѓР±Р»РёРєР°С†РёРё СЂРµР»РёР·Р° РјРµРЅСЏРµРј РЅР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ С‚РµРі
+		version: "v0.1.6", // С‚РµРєСѓС‰Р°СЏ РІРµСЂСЃРёСЏ; РїСЂРё РїСѓР±Р»РёРєР°С†РёРё СЂРµР»РёР·Р° РјРµРЅСЏРµРј РЅР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ С‚РµРі
 	}
 }
 
@@ -211,5 +211,6 @@ func (a *App) fillMockRegisters() {
 	a.transport.SetRegister(base+ttr01.OffMinute, uint16(now.Minute()))
 	a.transport.SetRegister(base+ttr01.OffSecond, uint16(now.Second()))
 }
+
 
 
