@@ -24,7 +24,7 @@ type App struct {
 type ReleaseCheck struct {
 	// Newer вЂ” true, РµСЃР»Рё РІ СЂРµР»РёР·Рµ РІРµСЂСЃРёСЏ РЅРѕРІРµРµ С‚РµРєСѓС‰РµР№.
 	Newer bool `json:"newer"`
-	// TagName вЂ” С‚РµРі СЂРµР»РёР·Р° (РЅР°РїСЂРёРјРµСЂ "v0.1.0").
+	// TagName вЂ” С‚РµРі СЂРµР»РёР·Р° (РЅР°РїСЂРёРјРµСЂ "v0.1.7").
 	TagName string `json:"tagName"`
 	// Name вЂ” РЅР°Р·РІР°РЅРёРµ СЂРµР»РёР·Р°.
 	Name string `json:"name"`
@@ -211,6 +211,7 @@ func (a *App) fillMockRegisters() {
 	a.transport.SetRegister(base+ttr01.OffMinute, uint16(now.Minute()))
 	a.transport.SetRegister(base+ttr01.OffSecond, uint16(now.Second()))
 }
+
 
 
 
